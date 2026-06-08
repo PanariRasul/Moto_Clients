@@ -1,5 +1,5 @@
-// server/prisma/seedBikeServices.js
-// bike services data from bike-services.xlsx
+// server/prisma/seedWashServices.js
+// washing services data from wash-services.xlsx
 import { PrismaClient } from "@prisma/client";
 import XLSX from "xlsx";
 import path from "path";
@@ -11,7 +11,7 @@ const prisma = new PrismaClient();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Convert name → slug
+// Convert name → slug for clean tracking routing
 function slugify(text) {
   return text
     .toString()
@@ -24,22 +24,22 @@ function slugify(text) {
 }
 
 async function main() {
-  console.log("📄 Reading Bike Services Excel...");
+  console.log("📄 Reading Wash Services Excel...");
 
-  const filePath = path.join(__dirname, "bike-services.xlsx");
+  const filePath = path.join(__dirname, "wash-services.xlsx");
 
   const workbook = XLSX.readFile(filePath);
   const sheet = workbook.Sheets[workbook.SheetNames[0]];
   const rows = XLSX.utils.sheet_to_json(sheet);
 
-  // 🚲 FIXED: Ensure Bike vehicle type matches strict uppercase schema
-  const bikeType = await prisma.vehicleType.upsert({
-    where: { name: "BIKE" },
+  // 🧼 FIXED: Ensure Washing vehicle type exists as canonical uppercase record
+  const washType = await prisma.vehicleType.upsert({
+    where: { name: "WASHING" },
     update: {},
-    create: { name: "BIKE" },
+    create: { name: "WASHING" },
   });
 
-  console.log("🚲 Vehicle Type Set To:", bikeType.name);
+  console.log("🧼 Vehicle Type Set To:", washType.name);
 
   let currentMain = null;
   let currentSection = null;
@@ -106,7 +106,7 @@ async function main() {
         where: {
           name: row.serviceName,
           sectionId: currentSection.id,
-          vehicleTypeId: bikeType.id,
+          vehicleTypeId: washType.id,
         },
       });
 
@@ -122,7 +122,7 @@ async function main() {
           originalPrice: row.originalPrice ? Number(row.originalPrice) : null,
           description: row.description || null,
           sectionId: currentSection.id,
-          vehicleTypeId: bikeType.id, // Links directly to the uppercase BIKE id
+          vehicleTypeId: washType.id, // Links directly to the uppercase WASHING id
         },
       });
 
@@ -130,7 +130,7 @@ async function main() {
     }
   }
 
-  console.log("🎉 Bike services inserted successfully.");
+  console.log("🎉 Washing services inserted successfully.");
 }
 
 main()

@@ -1,4 +1,3 @@
-//app
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,25 +7,25 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ==========================================
+// 👤 CONSUMER / USER MANAGEMENT
+// ==========================================
+
 model User {
-  id    String  @id @default(uuid())
-  name  String
-  phone String  @unique
-  email String?
-  dob   String?
-
-  profileImage     Bytes? // ✅ store binary
-  profileImageType String? // ✅ image/jpeg, image/png
-
-  role     Role    @default(USER)
-  isActive Boolean @default(true)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  address  UserAddress?
-  vehicles Vehicle[]
-  bookings Booking[]
+  id               String       @id @default(uuid())
+  name             String
+  phone            String       @unique
+  email            String?
+  dob              String?
+  profileImage     Bytes?
+  profileImageType String?
+  role             Role         @default(USER)
+  isActive         Boolean      @default(true)
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  address          UserAddress?
+  vehicles         Vehicle[]
+  bookings         Booking[]
 }
 
 model UserAddress {
@@ -37,46 +36,54 @@ model UserAddress {
   state      String?
   postalCode String?
   country    String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model VehicleType {
-  id   String @id @default(uuid())
-  name String @unique
+// ==========================================
+// 🚗 VEHICLE MODEL SPECIFICATIONS
+// ==========================================
 
+model VehicleType {
+  id       String    @id @default(uuid())
+  name     String    @unique // Enforces strict unique naming: 'CAR', 'BIKE', 'WASHING'
   brands   Brand[]
   vehicles Vehicle[]
   services Service[]
 }
 
 model Brand {
-  id            String @id @default(uuid())
-  name          String @unique
+  id            String      @id @default(uuid())
+  name          String      @unique
   vehicleTypeId String
-
-  vehicleType VehicleType @relation(fields: [vehicleTypeId], references: [id])
-
-  models  Model[]
-  Vehicle Vehicle[]
+  vehicleType   VehicleType @relation(fields: [vehicleTypeId], references: [id], onDelete: Cascade)
+  models        Model[]
+  vehicles      Vehicle[]
 }
 
 model Model {
-  id      String @id @default(uuid())
-  name    String
-  brandId String
-
-  brand Brand @relation(fields: [brandId], references: [id])
-
-  vehicles Vehicle[]
-
-  // ADD THIS
+  id        String         @id @default(uuid())
+  name      String
+  brandId   String
   segment   VehicleSegment
-  ModelYear ModelYear[]
+  brand     Brand          @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  vehicles  Vehicle[]
+  modelYear ModelYear[]
+}
+
+model ModelYear {
+  id           String    @id @default(uuid())
+  modelId      String
+  year         Int
+  heroUrl      String?
+  thumbnailUrl String?
+  model        Model     @relation(fields: [modelId], references: [id], onDelete: Cascade)
+  vehicles     Vehicle[]
+
+  @@unique([modelId, year])
 }
 
 model Vehicle {
-  id            String  @id @default(uuid())
+  id            String      @id @default(uuid())
   userId        String
   vehicleTypeId String
   brandId       String
@@ -84,266 +91,233 @@ model Vehicle {
   modelYearId   String?
   registration  String?
   fuelType      String?
-  isPrimary     Boolean @default(false) // ✅ ADD THIS
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  user        User        @relation(fields: [userId], references: [id])
-  vehicleType VehicleType @relation(fields: [vehicleTypeId], references: [id])
-  brand       Brand       @relation(fields: [brandId], references: [id])
-  model       Model       @relation(fields: [modelId], references: [id])
-  modelYear   ModelYear?  @relation(fields: [modelYearId], references: [id])
-
-  bookings Booking[]
+  isPrimary     Boolean     @default(false)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vehicleType   VehicleType @relation(fields: [vehicleTypeId], references: [id])
+  brand         Brand       @relation(fields: [brandId], references: [id])
+  model         Model       @relation(fields: [modelId], references: [id])
+  modelYear     ModelYear?  @relation(fields: [modelYearId], references: [id])
+  bookings      Booking[]
 
   @@index([userId])
+  @@index([vehicleTypeId])
 }
 
+// ==========================================
+// 🏢 CORE SERVICE PROVIDERS & INVENTORY
+// ==========================================
+
 model Garage {
-  id        String @id @default(uuid())
+  id        String          @id @default(uuid())
   name      String
   address   String
   city      String
   latitude  Float
   longitude Float
-
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-
-  services GarageService[]
-  bookings Booking[]
+  isActive  Boolean         @default(true)
+  createdAt DateTime        @default(now())
+  services  GarageService[]
+  bookings  Booking[]
 }
 
 model MainService {
-  id   String @id @default(uuid())
-  name String
-  slug String @unique
-
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  sections ServiceSection[]
+  id        String           @id @default(uuid())
+  name      String
+  slug      String           @unique
+  isActive  Boolean          @default(true)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  sections  ServiceSection[]
 }
 
 model ServiceSection {
-  id            String @id @default(uuid())
+  id            String      @id @default(uuid())
   name          String
   mainServiceId String
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  mainService MainService @relation(fields: [mainServiceId], references: [id])
-
-  services Service[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  mainService   MainService @relation(fields: [mainServiceId], references: [id], onDelete: Cascade)
+  services      Service[]
 }
 
 model Service {
-  id   String @id @default(uuid())
-  name String
-
+  id            String          @id @default(uuid())
+  name          String
   vehicleTypeId String
-  vehicleType   VehicleType @relation(fields: [vehicleTypeId], references: [id])
-
-  sectionId String
-  section   ServiceSection @relation(fields: [sectionId], references: [id])
-
-  description String?
-
-  // platform default pricing
+  sectionId     String
+  description   String?
   price         Float
   originalPrice Float?
-
   discountType  DiscountType?
   discountValue Float?
-
-  isActive Boolean @default(true)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  garages  GarageService[]
-  bookings Booking[]
+  isActive      Boolean         @default(true)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  vehicleType   VehicleType     @relation(fields: [vehicleTypeId], references: [id], onDelete: Cascade)
+  section       ServiceSection  @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  garages       GarageService[]
+  bookings      Booking[]
 
   @@index([vehicleTypeId])
+  @@index([sectionId])
 }
 
 model GarageService {
-  id        String @id @default(uuid())
+  id        String                 @id @default(uuid())
   garageId  String
   serviceId String
-
-  garage  Garage  @relation(fields: [garageId], references: [id])
-  service Service @relation(fields: [serviceId], references: [id])
-
-  pricing GarageServicePricing[] 
+  garage    Garage                 @relation(fields: [garageId], references: [id], onDelete: Cascade)
+  service   Service                @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  pricing   GarageServicePricing[]
 
   @@unique([garageId, serviceId])
   @@index([serviceId])
+  @@index([garageId])
 }
 
-model Booking {
-  id String @id @default(uuid())
-
-  userId    String
-  garageId  String
-  serviceId String
-  vehicleId String
-
-  status BookingStatus @default(PENDING)
-
-  scheduledAt DateTime
-  createdAt   DateTime @default(now())
-
-  user    User    @relation(fields: [userId], references: [id])
-  garage  Garage  @relation(fields: [garageId], references: [id])
-  service Service @relation(fields: [serviceId], references: [id])
-  vehicle Vehicle @relation(fields: [vehicleId], references: [id])
-
-  payments Payment[]
-
-  @@index([userId])
-}
-
-model Payment {
-  id        String @id @default(uuid())
-  bookingId String
-  amount    Float
-
-  status PaymentStatus @default(PENDING)
-
-  createdAt DateTime @default(now())
-
-  booking Booking @relation(fields: [bookingId], references: [id])
-}
-
-model ModelYear {
-  id           String  @id @default(uuid())
-  modelId      String
-  year         Int
-  heroUrl      String?
-  thumbnailUrl String?
-
-  model Model @relation(fields: [modelId], references: [id])
-
-  vehicles Vehicle[]
-
-  @@unique([modelId, year])
-}
+// ==========================================
+// 🏷️ MARKETPLACE EXTENSIONS & INTERNALS
+// ==========================================
 
 model MarketplaceService {
-  id                Int     @id @default(autoincrement())
-  externalServiceId String  @unique
+  id                Int                        @id @default(autoincrement())
+  externalServiceId String                     @unique
   name              String
   description       String?
   image             String?
-
-  garageServices GarageMarketplaceService[]
-  packageItems   MarketplacePackageItem[]
-  bookings       MarketplaceBooking[]
+  garageServices    GarageMarketplaceService[]
+  packageItems      MarketplacePackageItem[]
+  bookings          MarketplaceBooking[]
 }
 
 model GarageMarketplaceService {
-  id          Int                @id @default(autoincrement())
+  id          Int                    @id @default(autoincrement())
   userId      Int
   serviceId   Int
-  isActive    Boolean            @default(false)
+  isActive    Boolean                @default(false)
   duration    Int?
   description String?
   image       String?
-  service     MarketplaceService @relation(fields: [serviceId], references: [id])
-
-  // ⚠️ kept as-is (even though not used now)
-  pricing GarageServicePricing[]
+  service     MarketplaceService     @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  pricing     GarageServicePricing[]
 
   @@unique([userId, serviceId])
+  @@index([serviceId])
 }
 
 model GarageServicePricing {
-  id Int @id @default(autoincrement())
-
-  garageUserId      Int    @map("garage_user_id") // CRM User ID
-  externalServiceId String @map("external_service_id") // App DB Service UUID
-
-  carType  String @map("car_type")
-  price    Float  @default(0)
-  discount Float  @default(0)
-
-  description String?
-  image       String?
-
+  id                         Int                       @id @default(autoincrement())
+  garageUserId               Int                       @map("garage_user_id")
+  externalServiceId          String                    @map("external_service_id")
+  carType                    String                    @map("car_type")
+  price                      Float                     @default(0)
+  discount                   Float                     @default(0)
+  description                String?
+  image                      String?
   createdAt                  DateTime                  @default(now()) @map("created_at")
   updatedAt                  DateTime                  @updatedAt @map("updated_at")
-  GarageService              GarageService?            @relation(fields: [garageServiceId], references: [id])
   garageServiceId            String?
-  GarageMarketplaceService   GarageMarketplaceService? @relation(fields: [garageMarketplaceServiceId], references: [id])
   garageMarketplaceServiceId Int?
+  GarageService              GarageService?            @relation(fields: [garageServiceId], references: [id], onDelete: Cascade)
+  GarageMarketplaceService   GarageMarketplaceService? @relation(fields: [garageMarketplaceServiceId], references: [id], onDelete: Cascade)
 
   @@unique([garageUserId, externalServiceId, carType])
   @@index([externalServiceId])
   @@index([garageUserId])
-  @@map("GarageServicePricing")
 }
 
 model GarageServiceMeta {
-  id Int @id @default(autoincrement())
-
-  garageUserId      Int    @map("garage_user_id")
-  externalServiceId String @map("external_service_id")
-
-  description String?
-  image       String?
-
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt      @map("updated_at")
+  id                Int      @id @default(autoincrement())
+  garageUserId      Int      @map("garage_user_id")
+  externalServiceId String   @map("external_service_id")
+  description       String?
+  image             String?
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
 
   @@unique([garageUserId, externalServiceId])
   @@index([garageUserId])
   @@index([externalServiceId])
+}
 
-  @@map("GarageServiceMeta")
-} 
+// ==========================================
+// 📅 TRANSACTIONS & BOOKINGS
+// ==========================================
 
-// Update your existing MarketplaceBooking model to include these snapshots
-model MarketplaceBooking {
-  id        Int @id @default(autoincrement())
-  serviceId Int
-  garageId  Int
-  clientId  Int
-
+model Booking {
+  id          String        @id @default(uuid())
+  userId      String
+  garageId    String
+  serviceId   String
+  vehicleId   String
   status      BookingStatus @default(PENDING)
   scheduledAt DateTime
+  createdAt   DateTime      @default(now())
+  user        User          @relation(fields: [userId], references: [id])
+  garage      Garage        @relation(fields: [garageId], references: [id])
+  service     Service       @relation(fields: [serviceId], references: [id])
+  vehicle     Vehicle       @relation(fields: [vehicleId], references: [id])
+  payments    Payment[]
 
-  // Pricing Snapshots (Storage of what was paid)
-  carType    String?
-  finalPrice Float
+  @@index([userId])
+  @@index([garageId])
+  @@index([serviceId])
+}
 
-  service MarketplaceService @relation(fields: [serviceId], references: [id])
+model MarketplaceBooking {
+  id          Int                @id @default(autoincrement())
+  serviceId   Int
+  garageId    Int
+  clientId    Int
+  status      BookingStatus      @default(PENDING)
+  scheduledAt DateTime
+  carType     String?
+  finalPrice  Float
+  service     MarketplaceService @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@index([serviceId])
+  @@index([garageId])
 }
 
 model MarketplacePackage {
-  id        Int      @id @default(autoincrement())
-  userId    Int // The Garage User ID
+  id        Int                      @id @default(autoincrement())
+  userId    Int
   name      String
   price     Float
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
+  isActive  Boolean                  @default(true)
+  createdAt DateTime                 @default(now())
+  items     MarketplacePackageItem[]
 
-  items MarketplacePackageItem[]
+  @@index([userId])
 }
 
 model MarketplacePackageItem {
-  id          Int    @id @default(autoincrement())
-  packageId   Int
-  serviceId   Int // References MarketplaceService.id
-  serviceName String // Snapshot of name
-  basePrice   Float  @default(0)
-
+  id                 Int                @id @default(autoincrement())
+  packageId          Int
+  serviceId          Int
+  serviceName        String
+  basePrice          Float              @default(0)
   package            MarketplacePackage @relation(fields: [packageId], references: [id], onDelete: Cascade)
-  marketplaceService MarketplaceService @relation(fields: [serviceId], references: [id])
+  marketplaceService MarketplaceService @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@index([packageId])
+  @@index([serviceId])
 }
+
+model Payment {
+  id        String        @id @default(uuid())
+  bookingId String
+  amount    Float
+  status    PaymentStatus @default(PENDING)
+  createdAt DateTime      @default(now())
+  booking   Booking       @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+}
+
+// ==========================================
+// ⚙️ ENUMS
+// ==========================================
 
 enum Role {
   USER
