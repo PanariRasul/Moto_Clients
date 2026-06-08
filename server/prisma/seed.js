@@ -1,3 +1,5 @@
+// server/prisma/seed.js
+// car services data from services.xlsx
 import { PrismaClient } from "@prisma/client";
 import XLSX from "xlsx";
 import path from "path";
@@ -20,16 +22,23 @@ function slugify(text) {
     .replace(/--+/g, "-");
 }
 
+// 🏢 FIXED: Enforce strict uppercase names matching active CRM logins
 const carType = await prisma.vehicleType.upsert({
-  where: { name: "Car" },
+  where: { name: "CAR" },
   update: {},
-  create: { name: "Car" },
+  create: { name: "CAR" },
 });
 
 const bikeType = await prisma.vehicleType.upsert({
-  where: { name: "Bike" },
+  where: { name: "BIKE" },
   update: {},
-  create: { name: "Bike" },
+  create: { name: "BIKE" },
+});
+
+const washingType = await prisma.vehicleType.upsert({
+  where: { name: "WASHING" },
+  update: {},
+  create: { name: "WASHING" },
 });
 
 async function main() {
@@ -99,7 +108,7 @@ async function main() {
             ? Number(row["Original Price"])
             : null,
           sectionId: currentSection.id,
-          vehicleTypeId: carType.id,
+          vehicleTypeId: carType.id, // Links directly to the uppercase CAR id
         },
       });
 
