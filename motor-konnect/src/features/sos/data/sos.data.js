@@ -6,7 +6,7 @@ const SOS_SERVICES = [
     icon: "disc-outline",
     color: "#f59e0b",
     urgent: false,
-    phone: "+917204986825",
+    phone: "+917795692753",
   },
   {
     id: "fuel-assistance",
@@ -15,7 +15,7 @@ const SOS_SERVICES = [
     icon: "water-outline",
     color: "#3b82f6",
     urgent: false,
-    phone: "+917204986825",
+    phone: "+917795692753",
   },
   {
     id: "battery-jumpstart",
@@ -24,7 +24,7 @@ const SOS_SERVICES = [
     icon: "battery-charging-outline",
     color: "#10b981",
     urgent: false,
-    phone: "+917204986825",
+    phone: "+917795692753",
   },
   {
     id: "fluid-leakage",
@@ -33,7 +33,7 @@ const SOS_SERVICES = [
     icon: "alert-circle-outline",
     color: "#ef4444",
     urgent: true,
-    phone: "+917204986825",
+    phone: "+917795692753",
   },
   {
     id: "engine-scan",
@@ -42,7 +42,7 @@ const SOS_SERVICES = [
     icon: "build-outline",
     color: "#6366f1",
     urgent: false,
-    phone: "+917204986825",
+    phone: "+917795692753",
   },
   {
     id: "wheel-lift",
@@ -51,7 +51,7 @@ const SOS_SERVICES = [
     icon: "car-sport-outline",
     color: "#ef4444",
     urgent: true,
-    phone: "+917204986825",
+    phone: "+917795692753",
   },
   {
     id: "starter-issue",
@@ -60,7 +60,7 @@ const SOS_SERVICES = [
     icon: "flash-outline",
     color: "#f97316",
     urgent: false,
-    phone: "+917204986825",
+    phone: "+917795692753",
   },
   {
     id: "flatbed",
@@ -69,7 +69,7 @@ const SOS_SERVICES = [
     icon: "trail-sign-outline",
     color: "#ef4444",
     urgent: true,
-    phone: "+917204986825",
+    phone: "+917795692753",
   },
   {
     id: "clutch",
@@ -78,7 +78,7 @@ const SOS_SERVICES = [
     icon: "settings-outline",
     color: "#8b5cf6",
     urgent: false,
-    phone: "+917204986825",
+    phone: "+917795692753",
   },
   {
     id: "accident",
@@ -87,7 +87,7 @@ const SOS_SERVICES = [
     icon: "alert-circle-outline",
     color: "#ef4444",
     urgent: true,
-    phone: "+917204986825",
+    phone: "+917795692753",
   },
   {
     id: "flood",
@@ -96,7 +96,7 @@ const SOS_SERVICES = [
     icon: "rainy-outline",
     color: "#3b82f6",
     urgent: true,
-    phone: "+917204986825",
+    phone: "+917795692753",
   },
   {
     id: "brake",
@@ -105,7 +105,7 @@ const SOS_SERVICES = [
     icon: "warning-outline",
     color: "#ef4444",
     urgent: true,
-    phone: "+917204986825",
+    phone: "+917795692753",
   },
   {
     id: "dashboard-light",
@@ -114,7 +114,7 @@ const SOS_SERVICES = [
     icon: "speedometer-outline",
     color: "#f59e0b",
     urgent: false,
-    phone: "+917204986825",
+    phone: "+917795692753",
   },
   {
     id: "wrong-fuel",
@@ -123,6 +123,6 @@ const SOS_SERVICES = [
     icon: "flask-outline",
     color: "#ef4444",
     urgent: true,
-    phone: "+917204986825",
+    phone: "+917795692753",
   },
 ];

@@ -21,7 +21,7 @@ export default function AssistBanner() {
   // ✅ UPDATED CALL FUNCTION (WORKING)
   const handleCall = async () => {
     try {
-      const phoneNumber = "7204986825";
+      const phoneNumber = "7795692753";
       const url = `tel:${phoneNumber}`;
 
       console.log("📞 Call button clicked");
