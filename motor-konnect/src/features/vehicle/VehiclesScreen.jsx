@@ -20,13 +20,13 @@ import api from "../../services/apiClient.js";
 
 // Segment badge color map
 const SEGMENT_COLOR = {
-  HATCHBACK:    { bg: "#e0f2fe", text: "#0369a1" },
-  SEDAN:        { bg: "#f0fdf4", text: "#15803d" },
-  SUV:          { bg: "#fef9c3", text: "#a16207" },
-  LUXURY:       { bg: "#f3e8ff", text: "#7e22ce" },
+  HATCHBACK: { bg: "#e0f2fe", text: "#0369a1" },
+  SEDAN: { bg: "#f0fdf4", text: "#15803d" },
+  SUV: { bg: "#fef9c3", text: "#a16207" },
+  LUXURY: { bg: "#f3e8ff", text: "#7e22ce" },
   SUPER_LUXURY: { bg: "#fce7f3", text: "#be185d" },
-  PICKUP:       { bg: "#ffedd5", text: "#c2410c" },
-  VAN:          { bg: "#f1f5f9", text: "#475569" },
+  PICKUP: { bg: "#ffedd5", text: "#c2410c" },
+  VAN: { bg: "#f1f5f9", text: "#475569" },
 };
 
 const SegmentBadge = ({ segment }) => {
@@ -74,7 +74,7 @@ export default function VehiclesScreen() {
       await api.patch(`/auth/vehicles/${vehicleId}/primary`);
       // Update local state — unset all, set this one
       setVehicles((prev) =>
-        prev.map((v) => ({ ...v, isPrimary: v.id === vehicleId }))
+        prev.map((v) => ({ ...v, isPrimary: v.id === vehicleId })),
       );
     } catch (err) {
       console.log("Set primary error:", err.response?.data || err.message);
@@ -106,18 +106,30 @@ export default function VehiclesScreen() {
 
   const InfoRow = ({ icon, label, value }) => (
     <View style={[styles.infoRow, { borderBottomColor: theme.colors.border }]}>
-      <View style={[styles.infoIconWrap, { backgroundColor: theme.colors.primary + "15" }]}>
+      <View
+        style={[
+          styles.infoIconWrap,
+          { backgroundColor: theme.colors.primary + "15" },
+        ]}
+      >
         <Ionicons name={icon} size={14} color={theme.colors.primary} />
       </View>
       <View style={styles.infoTextWrap}>
-        <Text style={[styles.infoLabel, { color: theme.colors.textSecondary }]}>{label}</Text>
-        <Text style={[styles.infoValue, { color: theme.colors.text }]}>{value || "—"}</Text>
+        <Text style={[styles.infoLabel, { color: theme.colors.textSecondary }]}>
+          {label}
+        </Text>
+        <Text style={[styles.infoValue, { color: theme.colors.text }]}>
+          {value || "—"}
+        </Text>
       </View>
     </View>
   );
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }} edges={["top"]}>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: theme.colors.background }}
+      edges={["top"]}
+    >
       {/* Header */}
       <View style={[styles.header, { borderBottomColor: theme.colors.border }]}>
         <TouchableOpacity
@@ -131,10 +143,14 @@ export default function VehiclesScreen() {
             color={theme.colors.primary}
           />
           {Platform.OS === "ios" && (
-            <Text style={[styles.backLabel, { color: theme.colors.primary }]}>Back</Text>
+            <Text style={[styles.backLabel, { color: theme.colors.primary }]}>
+              Back
+            </Text>
           )}
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: theme.colors.text }]}>My Vehiclesssssss</Text>
+        <Text style={[styles.headerTitle, { color: theme.colors.text }]}>
+          My Vehicles
+        </Text>
         <TouchableOpacity
           onPress={() => router.push("/vehicle/type")}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
@@ -149,9 +165,17 @@ export default function VehiclesScreen() {
         </View>
       ) : vehicles.length === 0 ? (
         <View style={styles.centered}>
-          <Ionicons name="car-outline" size={52} color={theme.colors.textSecondary} />
-          <Text style={[styles.emptyTitle, { color: theme.colors.text }]}>No vehicles yet</Text>
-          <Text style={[styles.emptySub, { color: theme.colors.textSecondary }]}>
+          <Ionicons
+            name="car-outline"
+            size={52}
+            color={theme.colors.textSecondary}
+          />
+          <Text style={[styles.emptyTitle, { color: theme.colors.text }]}>
+            No vehicles yet
+          </Text>
+          <Text
+            style={[styles.emptySub, { color: theme.colors.textSecondary }]}
+          >
             Add your first vehicle to get started
           </Text>
           <TouchableOpacity
@@ -164,14 +188,18 @@ export default function VehiclesScreen() {
           </TouchableOpacity>
         </View>
       ) : (
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scroll}
+        >
           {vehicles.map((vehicle) => (
             <View
               key={vehicle.id}
               style={[
                 styles.vehicleCard,
                 {
-                  backgroundColor: theme.colors.card || theme.colors.surface || "#fff",
+                  backgroundColor:
+                    theme.colors.card || theme.colors.surface || "#fff",
                   borderColor: vehicle.isPrimary
                     ? theme.colors.primary
                     : theme.colors.border,
@@ -181,7 +209,12 @@ export default function VehiclesScreen() {
             >
               {/* Primary Badge */}
               {vehicle.isPrimary && (
-                <View style={[styles.primaryBanner, { backgroundColor: theme.colors.primary }]}>
+                <View
+                  style={[
+                    styles.primaryBanner,
+                    { backgroundColor: theme.colors.primary },
+                  ]}
+                >
                   <Ionicons name="star" size={11} color="#fff" />
                   <Text style={styles.primaryBannerText}>Primary Vehicle</Text>
                 </View>
@@ -205,38 +238,72 @@ export default function VehiclesScreen() {
                 >
                   {vehicle.model?.thumbnailUrl || vehicle.brand?.logoUrl ? (
                     <Image
-                      source={{ uri: vehicle.model?.thumbnailUrl || vehicle.brand?.logoUrl }}
+                      source={{
+                        uri:
+                          vehicle.model?.thumbnailUrl || vehicle.brand?.logoUrl,
+                      }}
                       style={styles.heroVehicleImage}
                       resizeMode="contain"
                     />
                   ) : (
-                    <Ionicons name="car-sport-outline" size={36} color={theme.colors.primary} />
+                    <Ionicons
+                      name="car-sport-outline"
+                      size={36}
+                      color={theme.colors.primary}
+                    />
                   )}
                 </View>
                 <View style={styles.heroText}>
                   <View style={styles.heroNameRow}>
-                    <Text style={[styles.heroName, { color: theme.colors.text }]}>
+                    <Text
+                      style={[styles.heroName, { color: theme.colors.text }]}
+                    >
                       {vehicle.brand?.name || "—"} {vehicle.model?.name || "—"}
                     </Text>
                   </View>
-                  <Text style={[styles.heroSub, { color: theme.colors.textSecondary }]}>
-                    {vehicle.vehicleType?.name || "—"} · {vehicle.modelYear?.year || "—"}
+                  <Text
+                    style={[
+                      styles.heroSub,
+                      { color: theme.colors.textSecondary },
+                    ]}
+                  >
+                    {vehicle.vehicleType?.name || "—"} ·{" "}
+                    {vehicle.modelYear?.year || "—"}
                   </Text>
                   {/* Segment Badge */}
                   <SegmentBadge segment={vehicle.model?.segment} />
                 </View>
                 {vehicle.registration && (
-                  <View style={[styles.regBadge, { backgroundColor: theme.colors.primary }]}>
-                    <Text style={styles.regBadgeText}>{vehicle.registration}</Text>
+                  <View
+                    style={[
+                      styles.regBadge,
+                      { backgroundColor: theme.colors.primary },
+                    ]}
+                  >
+                    <Text style={styles.regBadgeText}>
+                      {vehicle.registration}
+                    </Text>
                   </View>
                 )}
               </View>
 
               {/* Specs */}
               <View style={styles.specsWrap}>
-                <InfoRow icon="car-outline" label="Vehicle Type" value={vehicle.vehicleType?.name} />
-                <InfoRow icon="car-sport-outline" label="Brand" value={vehicle.brand?.name} />
-                <InfoRow icon="construct-outline" label="Model" value={vehicle.model?.name} />
+                <InfoRow
+                  icon="car-outline"
+                  label="Vehicle Type"
+                  value={vehicle.vehicleType?.name}
+                />
+                <InfoRow
+                  icon="car-sport-outline"
+                  label="Brand"
+                  value={vehicle.brand?.name}
+                />
+                <InfoRow
+                  icon="construct-outline"
+                  label="Model"
+                  value={vehicle.model?.name}
+                />
                 <InfoRow
                   icon="albums-outline"
                   label="Segment"
@@ -247,12 +314,25 @@ export default function VehiclesScreen() {
                   label="Model Year"
                   value={vehicle.modelYear?.year?.toString()}
                 />
-                <InfoRow icon="flame-outline" label="Fuel Type" value={vehicle.fuelType} />
-                <InfoRow icon="card-outline" label="Registration" value={vehicle.registration} />
+                <InfoRow
+                  icon="flame-outline"
+                  label="Fuel Type"
+                  value={vehicle.fuelType}
+                />
+                <InfoRow
+                  icon="card-outline"
+                  label="Registration"
+                  value={vehicle.registration}
+                />
               </View>
 
               {/* Actions Row */}
-              <View style={[styles.actionsRow, { borderTopColor: theme.colors.border }]}>
+              <View
+                style={[
+                  styles.actionsRow,
+                  { borderTopColor: theme.colors.border },
+                ]}
+              >
                 {/* Set as Primary */}
                 {!vehicle.isPrimary && (
                   <TouchableOpacity
@@ -265,11 +345,23 @@ export default function VehiclesScreen() {
                     activeOpacity={0.7}
                   >
                     {settingPrimary === vehicle.id ? (
-                      <ActivityIndicator size="small" color={theme.colors.primary} />
+                      <ActivityIndicator
+                        size="small"
+                        color={theme.colors.primary}
+                      />
                     ) : (
                       <>
-                        <Ionicons name="star-outline" size={15} color={theme.colors.primary} />
-                        <Text style={[styles.primaryBtnText, { color: theme.colors.primary }]}>
+                        <Ionicons
+                          name="star-outline"
+                          size={15}
+                          color={theme.colors.primary}
+                        />
+                        <Text
+                          style={[
+                            styles.primaryBtnText,
+                            { color: theme.colors.primary },
+                          ]}
+                        >
                           Set as Primary
                         </Text>
                       </>
@@ -279,15 +371,29 @@ export default function VehiclesScreen() {
 
                 {vehicle.isPrimary && (
                   <View style={[styles.primaryActivePill, { flex: 1 }]}>
-                    <Ionicons name="star" size={14} color={theme.colors.primary} />
-                    <Text style={[styles.primaryActiveText, { color: theme.colors.primary }]}>
+                    <Ionicons
+                      name="star"
+                      size={14}
+                      color={theme.colors.primary}
+                    />
+                    <Text
+                      style={[
+                        styles.primaryActiveText,
+                        { color: theme.colors.primary },
+                      ]}
+                    >
                       Primary
                     </Text>
                   </View>
                 )}
 
                 {/* Divider */}
-                <View style={[styles.actionDivider, { backgroundColor: theme.colors.border }]} />
+                <View
+                  style={[
+                    styles.actionDivider,
+                    { backgroundColor: theme.colors.border },
+                  ]}
+                />
 
                 {/* Delete */}
                 <TouchableOpacity
@@ -315,31 +421,48 @@ export default function VehiclesScreen() {
           style={styles.modalOverlay}
           onPress={() => !deleting && setDeleteTarget(null)}
         >
-          <Pressable style={[styles.modalSheet, { backgroundColor: theme.colors.card || theme.colors.surface || "#fff" }]}>
+          <Pressable
+            style={[
+              styles.modalSheet,
+              {
+                backgroundColor:
+                  theme.colors.card || theme.colors.surface || "#fff",
+              },
+            ]}
+          >
             <View style={styles.modalIconWrap}>
               <Ionicons name="trash-outline" size={28} color="#ef4444" />
             </View>
             <Text style={[styles.modalTitle, { color: theme.colors.text }]}>
               Remove Vehicle?
             </Text>
-            <Text style={[styles.modalSub, { color: theme.colors.textSecondary }]}>
+            <Text
+              style={[styles.modalSub, { color: theme.colors.textSecondary }]}
+            >
               Are you sure you want to remove{"\n"}
               <Text style={{ fontWeight: "700", color: theme.colors.text }}>
                 {deleteTarget?.name}
-              </Text>
-              {" "}from your account? This action cannot be undone.
+              </Text>{" "}
+              from your account? This action cannot be undone.
             </Text>
             <View style={styles.modalActions}>
               <TouchableOpacity
                 style={[
                   styles.modalCancelBtn,
-                  { borderColor: theme.colors.border, backgroundColor: theme.colors.background },
+                  {
+                    borderColor: theme.colors.border,
+                    backgroundColor: theme.colors.background,
+                  },
                 ]}
                 onPress={() => setDeleteTarget(null)}
                 disabled={deleting}
                 activeOpacity={0.7}
               >
-                <Text style={[styles.modalCancelText, { color: theme.colors.text }]}>Cancel</Text>
+                <Text
+                  style={[styles.modalCancelText, { color: theme.colors.text }]}
+                >
+                  Cancel
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.modalDeleteBtn, deleting && { opacity: 0.6 }]}
@@ -447,10 +570,20 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     marginTop: 2,
   },
-  segmentText: { fontSize: 10, fontWeight: "700", letterSpacing: 0.4, textTransform: "uppercase" },
+  segmentText: {
+    fontSize: 10,
+    fontWeight: "700",
+    letterSpacing: 0.4,
+    textTransform: "uppercase",
+  },
 
   regBadge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 20 },
-  regBadgeText: { color: "#fff", fontSize: 11, fontWeight: "700", letterSpacing: 0.5 },
+  regBadgeText: {
+    color: "#fff",
+    fontSize: 11,
+    fontWeight: "700",
+    letterSpacing: 0.5,
+  },
 
   specsWrap: {},
   infoRow: {
@@ -461,7 +594,13 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0.5,
     gap: 10,
   },
-  infoIconWrap: { width: 28, height: 28, borderRadius: 7, alignItems: "center", justifyContent: "center" },
+  infoIconWrap: {
+    width: 28,
+    height: 28,
+    borderRadius: 7,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   infoTextWrap: { flex: 1 },
   infoLabel: { fontSize: 10, fontWeight: "500", marginBottom: 1 },
   infoValue: { fontSize: 13, fontWeight: "600" },
@@ -525,7 +664,12 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   modalTitle: { fontSize: 20, fontWeight: "800", letterSpacing: -0.3 },
-  modalSub: { fontSize: 14, lineHeight: 22, textAlign: "center", paddingHorizontal: 8 },
+  modalSub: {
+    fontSize: 14,
+    lineHeight: 22,
+    textAlign: "center",
+    paddingHorizontal: 8,
+  },
   modalActions: { flexDirection: "row", gap: 12, marginTop: 8, width: "100%" },
   modalCancelBtn: {
     flex: 1,

@@ -71,11 +71,17 @@ export default function HomeScreen() {
     }
   };
 
-  const BASE_URL = "https://moto-clients.onrender.com/api/v1";
+  const BASE_URL = "https://046v55w0-8000.inc1.devtunnels.ms/api/v1";
+  // const BASE_URL = "https://moto-clients.onrender.com/api/v1";
 
   const loadGarages = async () => {
     try {
       setGarageLoading(true);
+
+      console.log("🚀 Loading garages...");
+      console.log("🌐 URL:", `${BASE_URL}/external/users`);
+      console.log("🔑 API KEY:", process.env.EXPO_PUBLIC_API_KEY);
+
       const res = await fetch(`${BASE_URL}/external/users`, {
         method: "GET",
         headers: {
@@ -83,17 +89,66 @@ export default function HomeScreen() {
           "x-api-key": process.env.EXPO_PUBLIC_API_KEY,
         },
       });
-      const data = await res.json();
+
+      console.log("📡 Response Status:", res.status);
+      console.log("📡 Response OK:", res.ok);
+
+      const responseText = await res.text();
+
+      console.log("📦 Raw Response:", responseText.substring(0, 500));
+
+      let data;
+
+      try {
+        data = JSON.parse(responseText);
+      } catch (parseError) {
+        console.log("❌ JSON Parse Error:", parseError);
+        console.log("❌ Invalid Response:", responseText);
+        setGarages([]);
+        return;
+      }
+
+      console.log("✅ API Success:", data?.success);
+      console.log("📊 Total Records:", data?.data?.length || 0);
+
       const garagesData = data?.data || [];
-      const filtered = garagesData.filter(
-        (g) => g.services && g.services.length > 0,
+
+      console.log(
+        "🔍 Services Count Per Garage:",
+        garagesData.map((g) => ({
+          id: g.id,
+          companyName: g.companyName,
+          servicesCount: g.services?.length || 0,
+        })),
       );
+
+      const filtered = garagesData.filter(
+        (g) => Array.isArray(g.services) && g.services.length > 0,
+      );
+
+      console.log("✅ Filtered Garages:", filtered.length);
+
+      filtered.forEach((garage, index) => {
+        console.log(
+          `🏪 Garage ${index + 1}:`,
+          garage.companyName,
+          "| Services:",
+          garage.services?.length,
+        );
+      });
+
       setGarages(filtered);
+
+      console.log("✅ Garages State Updated");
     } catch (err) {
       console.log("❌ GARAGE ERROR:", err);
+      console.log("❌ GARAGE ERROR MESSAGE:", err?.message);
+      console.log("❌ GARAGE ERROR STACK:", err?.stack);
+
       setGarages([]);
     } finally {
       setGarageLoading(false);
+      console.log("🏁 Garage Loading Finished");
     }
   };
 
